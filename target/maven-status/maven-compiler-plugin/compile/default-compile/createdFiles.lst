@@ -1,0 +1,7 @@
+com/rd2/entity/Book.class
+com/rd2/controller/BookController.class
+com/rd2/App.class
+com/rd2/repository/BookRepository.class
+com/rd2/HelloController.class
+com/rd2/DbImporter.class
+com/rd2/service/BooksService.class
