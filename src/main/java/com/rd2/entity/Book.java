@@ -2,45 +2,70 @@ package com.rd2.entity;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.util.HashSet;
+import java.util.Set;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "books")
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long bookId;
+    private Integer bookId;
     private String title;
-    private BigDecimal rating;
+    private Double rating;
     private String description;
     private String language;
     private String isbn;
-    private String book_format;
+    private String bookFormat;
     private String edition;
     private Integer pages;
     private String publisher;
-    private Date publish_date;
-    private Date first_publish_date;
-    private BigDecimal  liked_percent;
-    private BigDecimal  price;
-    @Column(name = "search_vector", columnDefinition = "tsvector")
+    private Date publishDate;
+    private Date firstPublishDate;
+    private Double likedPercent;
+    private BigDecimal price;
+    @Column(name = "search_vector", columnDefinition = "tsvector", insertable = false, updatable = false)
     private String searchVector;
 
-    public Long getBookId() {
+    public Integer getBookId() {
         return bookId;
+    }
+
+    public Double getLikedPercent() {
+        return likedPercent;
+    }
+
+    public void setLikedPercent(Double likedPercent) {
+        this.likedPercent = likedPercent;
+    }
+
+    public void setBookFormat(String bookFormat) {
+        this.bookFormat = bookFormat;
+    }
+
+    public Date getPublishDate() {
+        return publishDate;
+    }
+
+    public void setPublishDate(Date publishDate) {
+        this.publishDate = publishDate;
+    }
+
+    public Date getFirstPublishDate() {
+        return firstPublishDate;
+    }
+
+    public void setFirstPublishDate(Date firstPublishDate) {
+        this.firstPublishDate = firstPublishDate;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public BigDecimal getRating() {
+    public Double getRating() {
         return rating;
     }
 
@@ -56,8 +81,8 @@ public class Book {
         return isbn;
     }
 
-    public String getBook_format() {
-        return book_format;
+    public String getBookFormat() {
+        return bookFormat;
     }
 
     public String getEdition() {
@@ -73,15 +98,7 @@ public class Book {
     }
 
     public Date getPublish_date() {
-        return publish_date;
-    }
-
-    public Date getFirst_publish_date() {
-        return first_publish_date;
-    }
-
-    public BigDecimal getLiked_percent() {
-        return liked_percent;
+        return publishDate;
     }
 
     public BigDecimal getPrice() {
@@ -90,6 +107,61 @@ public class Book {
 
     public String getSearchVector() {
         return searchVector;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setRating(Double rating) {
+        this.rating = rating;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
+    public void setEdition(String edition) {
+        this.edition = edition;
+    }
+
+    public void setPages(Integer pages) {
+        this.pages = pages;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+        name = "books_authors",
+        joinColumns = @JoinColumn(name = "book_id"),
+        inverseJoinColumns = @JoinColumn(name = "author_id")
+    )
+    private Set<Author> authors = new HashSet<>();
+    
+    // Helper methods for bidirectional relationship
+    public void addAuthor(Author author) {
+        this.authors.add(author);
+        author.getBooks().add(this);
+    }
+    
+    public void removeAuthor(Author author) {
+        this.authors.remove(author);
+        author.getBooks().remove(this);
     }
 
     @Override
@@ -101,13 +173,13 @@ public class Book {
                 ", description='" + description + '\'' +
                 ", language='" + language + '\'' +
                 ", isbn='" + isbn + '\'' +
-                ", book_format='" + book_format + '\'' +
+                ", book_format='" + bookFormat + '\'' +
                 ", edition='" + edition + '\'' +
                 ", pages=" + pages +
                 ", publisher='" + publisher + '\'' +
-                ", publish_date=" + publish_date +
-                ", first_publish_date=" + first_publish_date +
-                ", liked_percent=" + liked_percent +
+                ", publish_date=" + publishDate +
+                ", first_publish_date=" + firstPublishDate +
+                ", liked_percent=" + likedPercent +
                 ", price=" + price +
                 '}';
     }

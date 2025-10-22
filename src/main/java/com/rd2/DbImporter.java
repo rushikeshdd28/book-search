@@ -18,8 +18,9 @@ public class DbImporter {
     private static final String DB_URL = "jdbc:postgresql://localhost:5432/library";
     private static final String DB_USER = "admin";
     private static final String DB_PASSWORD = "admin123";
-
-    public static void main(String[] args) {
+    
+    // commneting main as it is also calling during application startup
+    /* public static void main(String[] args) {
         try {
             System.out.println("Starting data ingestion...");
 
@@ -41,7 +42,7 @@ public class DbImporter {
             System.err.println("An error occurred during data ingestion:");
             e.printStackTrace();
         }
-    }
+    } */
 
     // Download the CSV file from the URL
     private static InputStream downloadCSV(String urlStr) throws IOException {
