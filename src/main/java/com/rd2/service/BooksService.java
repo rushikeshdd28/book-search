@@ -3,9 +3,12 @@ package com.rd2.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.rd2.dto.AuthorLinksDTO;
 import com.rd2.dto.BookPatchDTO;
 import com.rd2.entity.Author;
 import com.rd2.entity.Book;
@@ -28,9 +31,9 @@ public class BooksService {
     private AuthorRepository authorRepository;
 
     @Transactional(readOnly = true)
-    public List<Book> getAllBooks() {
+    public Page<Book> getAllBooks(Pageable pageable) {
         log.info("Fetching all authors");
-        return bookRepository.findAll();
+        return bookRepository.findAll(pageable);
     }
 
      // Create a new book
@@ -39,6 +42,7 @@ public class BooksService {
     }
 
     // Create book with authors (by author names)
+    @Transactional
     public Book createBookWithAuthors(Book book, List<Author> authorNames) {
         for (Author authorName : authorNames) {
             Author author = authorRepository.findByName(authorName.getName())
@@ -65,11 +69,11 @@ public class BooksService {
         return bookRepository.save(book);
     }
 
-    public List<Book> searchBooks(String saerchTerm) {
+    public Page<Book> searchBooks(String saerchTerm, Pageable pageable) {
         if(saerchTerm == null || saerchTerm.isEmpty()) {
             throw new IllegalArgumentException("Search term must not be null or empty");
         }
-        return bookRepository.searchBooks(saerchTerm);
+        return bookRepository.searchBooks(saerchTerm, pageable);
     }
 
     public Book searchBooksById(Integer id) {
@@ -78,17 +82,31 @@ public class BooksService {
         }
         return bookRepository.findByBookId(id);
     }
+
+    public Book searchBooksByIsbn(String strISBN) {
+        if(strISBN == null || strISBN.isEmpty()) {
+            throw new IllegalArgumentException("id must not be null or less than or equal to zero");
+        }
+        return bookRepository.findByIsbn(strISBN);
+    }
     
+    public List<Author> searchAuthorByBookId(Integer bookId)
+    {
+        if(bookId == null || bookId <= 0) {
+            throw new IllegalArgumentException("id must not be null or less than or equal to zero");
+        }
+        return authorRepository.findByBookId(bookId);
+    }
     // Search books by title
     @Transactional(readOnly = true)
-    public List<Book> searchBooksByTitle(String title) {
-        return bookRepository.findByTitleContainingIgnoreCase(title);
+    public Page<Book> searchBooksByTitle(String title, Pageable pageable) {
+        return bookRepository.findByTitleContainingIgnoreCase(title, pageable);
     }
     
     // Get books by author name
     @Transactional(readOnly = true)
-    public List<Book> getBooksByAuthor(String name) {
-        return bookRepository.findByAuthorsNameContainingIgnoreCase(name);
+    public Page<Book> getBooksByAuthor(String name, Pageable pageable) {
+        return bookRepository.findByAuthorsNameContainingIgnoreCase(name, pageable);
     }
 
     // Add author to existing book

@@ -3,11 +3,12 @@ package com.rd2.service;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import com.rd2.entity.Book;
 
@@ -16,11 +17,13 @@ public class BooksServiceTest {
     @Autowired
     private BooksService booksService;
 
+    private static final Pageable DEFAULT_PAGEABLE = PageRequest.of(0, 10);
+
     @Test
     void testSearchBooksWhenTermIsEmpty() {
         String searchTerm = "";
         assertThrows(IllegalArgumentException.class, () -> {
-            booksService.searchBooks(searchTerm);
+            booksService.searchBooks(searchTerm, DEFAULT_PAGEABLE);
         }); 
     }
     
@@ -28,14 +31,14 @@ public class BooksServiceTest {
     void testSearchBooksWhenTermIsNull() {
         String searchTerm = "";
         assertThrows(IllegalArgumentException.class, () -> {
-            booksService.searchBooks(searchTerm);
+            booksService.searchBooks(searchTerm, DEFAULT_PAGEABLE);
         }); 
     }
 
     @Test
     void testSearchBooksWhenTermIsValid() {
         String searchTerm = "algorithms";
-        List<Book> books = booksService.searchBooks(searchTerm);
-        assertTrue(books.size() > 0);
+        Page<Book> books = booksService.searchBooks(searchTerm, DEFAULT_PAGEABLE);
+        assertTrue(books.getContent().size() > 0);
     }
 }
